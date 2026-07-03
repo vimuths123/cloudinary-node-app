@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cloudinary Upload Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 0 20px;
+    }
+    form {
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      padding: 30px;
+      text-align: center;
+    }
+    input[type="file"] {
+      margin-bottom: 15px;
+    }
+    button {
+      background: #3448c5;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2a3aa0;
+    }
+    #result {
+      margin-top: 20px;
+      text-align: center;
+    }
+    #result img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Image Upload Demo</h1>
+
+  <form id="uploadForm">
+    <input type="file" name="image" accept="image/*" required />
+    <br />
+    <button type="submit">Upload Image</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); // stop the browser's default page reload
+
+      const formData = new FormData(form);
+      result.innerHTML = '<p>Uploading...</p>';
+
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+          result.innerHTML = `
+            <p>✅ Uploaded successfully!</p>
+            <img src="${data.url}" alt="Uploaded image" />
+            <p><small>${data.url}</small></p>
+          `;
+        } else {
+          result.innerHTML = `<p>❌ Upload failed: ${data.error}</p>`;
+        }
+      } catch (err) {
+        result.innerHTML = `<p>❌ Error: ${err.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
